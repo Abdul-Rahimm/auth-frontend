@@ -59,7 +59,7 @@ export function LoginForm({ onToggleMode }: LoginFormProps) {
   return (
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="text-center">
-        <CardTitle className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <CardTitle className="text-3xl dark:text-black font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           Welcome Back
         </CardTitle>
         <CardDescription className="text-gray-600">

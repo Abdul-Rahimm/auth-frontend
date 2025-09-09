@@ -56,7 +56,9 @@ export function Dashboard() {
           {/* Welcome Card */}
           <Card className="md:col-span-2 lg:col-span-3">
             <CardHeader>
-              <CardTitle className="text-2xl">Welcome back! 👋</CardTitle>
+              <CardTitle className="text-2xl dark:text-black">
+                Welcome back! 👋
+              </CardTitle>
               <CardDescription>
                 You have successfully logged into your account
               </CardDescription>
@@ -67,8 +69,8 @@ export function Dashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5" />
-                <span>Profile</span>
+                <User className="h-5 w-5 dark:text-black " />
+                <span className="dark:text-black">Profile</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
@@ -87,8 +89,8 @@ export function Dashboard() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Calendar className="h-5 w-5" />
-                <span>Account</span>
+                <Calendar className="h-5 w-5 dark:text-black" />
+                <span className="dark:text-black">Account</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
