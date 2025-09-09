@@ -1,57 +1,117 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 import { User } from "@/types/auth";
+
+interface JwtPayload {
+  sub: number;
+  email: string;
+  createdAt: string;
+  iat?: number;
+  exp?: number;
+}
 
 interface AuthContextType {
   user: User | null;
   isAuthenticated: boolean;
   isLoading: boolean;
+  token: string | null;
   login: (token: string) => void;
   logout: () => void;
+  refreshUserFromToken: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const isTokenValid = (token: string): boolean => {
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+    // Check if token is expired (with 5 minute buffer)
+    const currentTime = Date.now();
+    const expirationTime = decoded.exp ? decoded.exp * 1000 : 0;
+    const bufferTime = 5 * 60 * 1000; // 5 minutes buffer
+
+    return expirationTime > currentTime + bufferTime;
+  } catch {
+    return false;
+  }
+};
+
+const decodeTokenToUser = (token: string): User | null => {
+  try {
+    const decoded = jwtDecode<JwtPayload>(token);
+
+    // Check if token is expired
+    if (!isTokenValid(token)) {
+      return null;
+    }
+
+    return {
+      id: decoded.sub,
+      email: decoded.email,
+      createdAt: decoded.createdAt,
+    };
+  } catch (error) {
+    console.error("Error decoding JWT token:", error);
+    return null;
+  }
+};
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState<string | null>(null);
+
+  const refreshUserFromToken = () => {
+    const storedToken = localStorage.getItem("authToken");
+    if (storedToken && isTokenValid(storedToken)) {
+      const decodedUser = decodeTokenToUser(storedToken);
+      if (decodedUser) {
+        setUser(decodedUser);
+        setToken(storedToken);
+      } else {
+        localStorage.removeItem("authToken");
+        setUser(null);
+        setToken(null);
+      }
+    } else {
+      localStorage.removeItem("authToken");
+      setUser(null);
+      setToken(null);
+    }
+  };
 
   useEffect(() => {
-    const token = localStorage.getItem("authToken");
-    if (token) {
-      // In a real app, you'd decode the JWT to get user info
-      // For now, we'll just mark as authenticated
-      setUser({
-        id: 1,
-        email: "user@example.com",
-        createdAt: new Date().toISOString(),
-      });
-    }
+    refreshUserFromToken();
     setIsLoading(false);
   }, []);
 
-  const login = (token: string) => {
-    localStorage.setItem("authToken", token);
-    // In a real app, you'd decode the JWT to get user info
-    setUser({
-      id: 1,
-      email: "user@example.com",
-      createdAt: new Date().toISOString(),
-    });
+  const login = (newToken: string) => {
+    const decodedUser = decodeTokenToUser(newToken);
+    if (decodedUser) {
+      localStorage.setItem("authToken", newToken);
+      setUser(decodedUser);
+      setToken(newToken);
+    } else {
+      console.error("Invalid token provided to login function");
+    }
   };
 
   const logout = () => {
     localStorage.removeItem("authToken");
     setUser(null);
+    setToken(null);
   };
 
   const value = {
     user,
     isAuthenticated: !!user,
     isLoading,
+    token,
     login,
     logout,
+    refreshUserFromToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
