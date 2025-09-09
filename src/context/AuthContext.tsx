@@ -4,23 +4,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { User } from "@/types/auth";
 
-interface JwtPayload {
-  sub: number;
-  email: string;
-  createdAt: string;
-  iat?: number;
-  exp?: number;
-}
-
-interface AuthContextType {
-  user: User | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  token: string | null;
-  login: (token: string) => void;
-  logout: () => void;
-  refreshUserFromToken: () => void;
-}
+import { AuthContextType, JwtPayload } from "@/interfaces/IAuthContext";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
