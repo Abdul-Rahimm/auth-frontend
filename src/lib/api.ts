@@ -4,6 +4,7 @@ import {
   SignupCredentials,
   AuthResponse,
   ApiError,
+  UpdateProfileData,
 } from "@/types/auth";
 
 const API_BASE_URL = "http://localhost:3001";
@@ -55,6 +56,17 @@ export const authApi = {
 
   logout: async (): Promise<AuthResponse> => {
     const response = await api.post<AuthResponse>("/auth/logout");
+    return response.data;
+  },
+
+  updateProfile: async (
+    userId: number,
+    updateData: UpdateProfileData
+  ): Promise<AuthResponse> => {
+    const response = await api.patch<AuthResponse>(
+      `/auth/update/${userId}`,
+      updateData
+    );
     return response.data;
   },
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { LogOut, User, Calendar } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import { authApi } from "@/lib/api";
@@ -12,9 +12,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/Card";
+import { UpdateProfileModal } from "@/components/UpdateProfileModal";
+import { ToastContainer, useToast } from "@/components/ui/Toast";
 
 export function Dashboard() {
   const { user, logout } = useAuth();
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const { toasts, addToast, removeToast } = useToast();
 
   const handleLogout = async () => {
     try {
@@ -24,6 +28,18 @@ export function Dashboard() {
     } finally {
       logout();
     }
+  };
+
+  const handleUpdateProfile = () => {
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateSuccess = () => {
+    addToast("Profile updated successfully!", "success");
+  };
+
+  const handleUpdateError = (message: string) => {
+    addToast(message, "error");
   };
 
   if (!user) return null;
@@ -116,7 +132,11 @@ export function Dashboard() {
               <CardDescription>Manage your account settings</CardDescription>
             </CardHeader>
             <CardContent className="space-y-3">
-              <Button variant="outline" className="w-full justify-start">
+              <Button
+                variant="outline"
+                className="w-full justify-start"
+                onClick={handleUpdateProfile}
+              >
                 <User className="h-4 w-4 mr-2" />
                 Update Profile
               </Button>
@@ -208,6 +228,17 @@ export function Dashboard() {
           </div>
         </div>
       </main>
+
+      {/* Update Profile Modal */}
+      <UpdateProfileModal
+        isOpen={isUpdateModalOpen}
+        onClose={() => setIsUpdateModalOpen(false)}
+        onSuccess={handleUpdateSuccess}
+        onError={handleUpdateError}
+      />
+
+      {/* Toast Notifications */}
+      <ToastContainer toasts={toasts} onRemove={removeToast} />
     </div>
   );
 }

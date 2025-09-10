@@ -19,6 +19,11 @@ export interface AuthResponse {
   token?: string;
 }
 
+export interface UpdateProfileData {
+  email?: string;
+  password?: string;
+}
+
 export interface ApiError {
   message: string;
   statusCode?: number;

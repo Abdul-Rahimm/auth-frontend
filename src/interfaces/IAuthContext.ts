@@ -16,4 +16,5 @@ export interface AuthContextType {
   login: (token: string) => void;
   logout: () => void;
   refreshUserFromToken: () => void;
+  updateUser: (updatedUser: User) => void;
 }
